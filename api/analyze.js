@@ -7,7 +7,27 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { topTalents, allScores, confirmedPatterns, deniedPatterns } = req.body;
+    const { topTalents, allScores, confirmedPatterns, deniedPatterns, customPrompt } = req.body;
+
+    // If a fully custom prompt is provided (shadow/compat), use it directly
+    if (customPrompt) {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 3000,
+          messages: [{ role: 'user', content: customPrompt }],
+        }),
+      });
+      const data = await response.json();
+      const text = data.content?.[0]?.text || 'Не вдалось отримати аналіз.';
+      return res.status(200).json({ analysis: text });
+    }
 
     const topList = topTalents
       .map((t, i) => `${i + 1}. ${t.name} — ${t.desc}`)
