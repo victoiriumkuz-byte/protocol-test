@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocol — Тест сильних сторін</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Martian+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
     --bg: #0a0a0a;
@@ -641,28 +640,28 @@ async function getAIAnalysis(topTalents, allScores) {
 // ============================================================
 const RESOURCES = {
   'Мислення': [
-    { type: 'Книга', title: 'Thinking, Fast and Slow', desc: 'Деніел Канеман. Як мозок приймає рішення — і де помиляється.' },
-    { type: 'Книга', title: 'The Art of Thinking Clearly', desc: 'Рольф Добеллі. 99 когнітивних упереджень яких варто уникати.' },
-    { type: 'Курс', title: 'Learning How to Learn', desc: 'Coursera. Найпопулярніший курс у світі про техніки навчання.' },
-    { type: 'Книга', title: 'Deep Work', desc: 'Кел Ньюпорт. Як досягати результатів в епоху відволікань.' },
+    { type: 'Книга · є переклад', title: 'Думай повільно, вирішуй швидко', desc: 'Деніел Канеман. Як мозок приймає рішення і де помиляється. Одна з найважливіших книг про мислення.' },
+    { type: 'Книга · є переклад', title: 'Мистецтво мислити ясно', desc: 'Рольф Добеллі. 99 когнітивних пасток, яких варто уникати у щоденних рішеннях.' },
+    { type: 'Книга · є переклад', title: 'Глибока робота', desc: 'Кел Ньюпорт. Як досягати видатних результатів в епоху постійних відволікань.' },
+    { type: 'Книга · є переклад', title: 'У потоці', desc: 'Міхай Чиксентміхайї. Як досягти стану глибокої концентрації і отримувати задоволення від роботи.' },
   ],
   'Вплив': [
-    { type: 'Книга', title: 'Influence', desc: 'Роберт Чалдіні. Психологія переконання — класика жанру.' },
-    { type: 'Книга', title: 'Never Split the Difference', desc: 'Кріс Восс. Переговори від колишнього агента ФБР.' },
-    { type: 'Курс', title: 'Inspiring and Motivating Individuals', desc: 'Coursera/Michigan. Як вести людей за собою.' },
-    { type: 'Книга', title: 'Talk Like TED', desc: 'Кармін Галло. Секрети найкращих публічних виступів.' },
+    { type: 'Книга · є переклад', title: 'Психологія впливу', desc: 'Роберт Чалдіні. Шість принципів переконання — обовязкова книга для кожного, хто працює з людьми.' },
+    { type: 'Книга · є переклад', title: 'Ніколи не йдіть на компроміс', desc: 'Кріс Восс. Техніки переговорів від колишнього агента ФБР — працює в бізнесі та житті.' },
+    { type: 'Книга · є переклад', title: 'Говори як TED', desc: 'Кармін Галло. Що робить публічний виступ незабутнім — секрети найкращих спікерів світу.' },
+    { type: 'Книга · є переклад', title: 'Почни з Чому', desc: 'Саймон Сінек. Як великі лідери надихають до дій через мету, а не через продукт.' },
   ],
   'Відносини': [
-    { type: 'Книга', title: 'How to Win Friends and Influence People', desc: 'Дейл Карнегі. Вічна класика про побудову стосунків.' },
-    { type: 'Книга', title: 'The 5 Love Languages', desc: 'Гері Чепмен. Як розуміти і бути зрозумілим.' },
-    { type: 'Курс', title: 'Successful Negotiation', desc: 'Coursera/Michigan. Стратегії для ефективної взаємодії.' },
-    { type: 'Книга', title: 'Dare to Lead', desc: 'Брене Браун. Вразливість як суперсила лідера.' },
+    { type: 'Книга · є переклад', title: 'Як здобувати друзів', desc: 'Дейл Карнегі. Вічна класика про побудову стосунків — актуальна через 90 років після написання.' },
+    { type: 'Книга · є переклад', title: 'Ненасильницьке спілкування', desc: 'Маршалл Розенберг. Як говорити так, щоб тебе чули і слухати так, щоб розуміти.' },
+    { type: 'Книга · є переклад', title: 'Сміливість бути вразливим', desc: 'Брене Браун. Чому відкритість — це не слабкість, а суперсила сучасного лідера.' },
+    { type: 'Книга · є переклад', title: 'Ігри, в які грають люди', desc: 'Ерік Берн. Розуміння прихованих сценаріїв у спілкуванні — транзакційний аналіз простою мовою.' },
   ],
   'Виконання': [
-    { type: 'Книга', title: 'Atomic Habits', desc: 'Джеймс Клір. Система малих звичок для великих результатів.' },
-    { type: 'Книга', title: 'Getting Things Done', desc: 'Девід Аллен. Методологія продуктивності GTD.' },
-    { type: 'Курс', title: 'Work Smarter, Not Harder', desc: 'Coursera/UC Irvine. Управління часом і проєктами.' },
-    { type: 'Книга', title: 'The ONE Thing', desc: 'Гері Келлер. Фокус на головному як шлях до успіху.' },
+    { type: 'Книга · є переклад', title: 'Атомні звички', desc: 'Джеймс Клір. Система малих щоденних дій, яка приводить до видатних довгострокових результатів.' },
+    { type: 'Книга · є переклад', title: 'Єдине, що важливо', desc: 'Гері Келлер. Як фокус на одному головному завданні дає кращий результат, ніж багатозадачність.' },
+    { type: 'Книга · є переклад', title: 'Від хорошого до великого', desc: 'Джим Коллінз. Що відрізняє компанії-лідери від просто хороших — дослідження на реальних даних.' },
+    { type: 'Книга · є переклад', title: 'Зроби це зараз', desc: 'Девід Аллен. Методологія GTD для управління завданнями, яку використовують мільйони людей.' },
   ],
 };
 
@@ -720,13 +719,15 @@ function renderResult(scores, analysis) {
       <div class="talent-score">${TALENTS[t.name]?.cat || ''}</div>
     </div>`).join('');
 
-  // Analysis
+  // Analysis - clean markdown formatting
   const formatted = analysis
-    .replace(/###\s(.+)/g, '<h3>$1</h3>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<h3>$1</h3>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/gs, '<ul>$&</ul>')
     .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-    .replace(/- (.+)/g, '<li>$1</li>');
+    .replace(/\n/g, ' ');
   document.getElementById('analysisText').innerHTML = `<p>${formatted}</p>`;
 
   // Resources
@@ -769,134 +770,86 @@ function shareResult() {
 
 function downloadPDF() {
   if (!currentResult) return;
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const W = 210, margin = 20, contentW = W - margin * 2;
+  const r = currentResult;
+  const catScores = [...r.catScores].sort((a, b) => b.avg - a.avg);
+  const maxCat = Math.max(...catScores.map(c => c.avg));
 
-  // Background
-  doc.setFillColor(10, 10, 10);
-  doc.rect(0, 0, W, 297, 'F');
+  const cleanAnalysis = (r.analysis || '')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<h2 style="font-size:13px;color:#1a1a1a;margin:14px 0 6px;font-family:Georgia,serif;font-weight:600">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#8b6f47">$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/
 
-  // Header bar
-  doc.setFillColor(200, 169, 110);
-  doc.rect(0, 0, W, 2, 'F');
+/g, '</p><p style="margin:0 0 8px">')
+    .replace(/
+/g, ' ');
 
-  // Logo
-  doc.setTextColor(200, 169, 110);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.text('PROTOCOL', margin, 16);
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:#fff; color:#1a1a1a; padding:0; }
+  .page { width:210mm; min-height:297mm; padding:20mm; }
+  .header { display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; border-bottom:2px solid #c8a96e; margin-bottom:20px; }
+  .logo { font-size:10px; letter-spacing:4px; color:#c8a96e; font-weight:500; }
+  .date { font-size:9px; color:#999; }
+  .profile-name { font-family:'Playfair Display',serif; font-size:36px; font-weight:400; color:#1a1a1a; margin-bottom:6px; }
+  .profile-tag { font-size:9px; letter-spacing:3px; color:#8b6f47; text-transform:uppercase; margin-bottom:20px; }
+  .divider { height:1px; background:#e8e0d4; margin:16px 0; }
+  .section-label { font-size:8px; letter-spacing:4px; color:#8b6f47; text-transform:uppercase; margin-bottom:10px; font-weight:500; }
+  .top5 { display:flex; gap:6px; margin-bottom:20px; }
+  .talent-box { flex:1; border:1px solid #e8e0d4; padding:10px 6px; text-align:center; }
+  .t-rank { font-size:7px; color:#bbb; margin-bottom:4px; }
+  .t-name { font-family:'Playfair Display',serif; font-size:11px; color:#c8a96e; margin-bottom:3px; }
+  .t-cat { font-size:7px; color:#999; }
+  .cat-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .cat-label { font-size:8px; color:#666; width:70px; flex-shrink:0; }
+  .cat-bar-bg { flex:1; height:3px; background:#f0ece4; }
+  .cat-bar-fill { height:100%; background:linear-gradient(90deg,#8b6f47,#c8a96e); }
+  .cat-pct { font-size:8px; color:#c8a96e; width:28px; text-align:right; flex-shrink:0; }
+  .analysis { font-size:10px; line-height:1.8; color:#444; }
+  .analysis p { margin-bottom:8px; }
+  .analysis h2 { font-size:12px; color:#1a1a1a; margin:14px 0 6px; font-family:'Playfair Display',serif; font-weight:400; }
+  .analysis strong { color:#8b6f47; font-weight:500; }
+  .analysis ul { padding-left:14px; margin:6px 0; }
+  .analysis li { margin-bottom:4px; }
+  .footer { margin-top:20px; padding-top:10px; border-top:1px solid #e8e0d4; display:flex; justify-content:space-between; }
+  .footer span { font-size:7px; color:#bbb; letter-spacing:2px; }
+</style>
+</head><body><div class="page">
+  <div class="header">
+    <span class="logo">PROTOCOL</span>
+    <span class="date">${r.date}</span>
+  </div>
+  <div class="profile-name">${r.name}</div>
+  <div class="profile-tag">${r.tagline}</div>
+  <div class="divider"></div>
+  <div class="section-label">Топ-5 талантів</div>
+  <div class="top5">
+    ${r.top5.map((t,i) => `<div class="talent-box"><div class="t-rank">#${i+1}</div><div class="t-name">${t.name}</div><div class="t-cat">${(window.TALENTS||{})[t.name]?.cat||''}</div></div>`).join('')}
+  </div>
+  <div class="section-label">Профіль категорій</div>
+  <div style="margin-bottom:20px">
+    ${catScores.map(c => `<div class="cat-row"><span class="cat-label">${c.cat}</span><div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(c.avg/(maxCat||1))*100}%"></div></div><span class="cat-pct">${c.avg}%</span></div>`).join('')}
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Детальний аналіз</div>
+  <div class="analysis"><p style="margin:0 0 8px">${cleanAnalysis}</p></div>
+  <div class="footer">
+    <span>PROTOCOL — ТЕСТ СИЛЬНИХ СТОРІН</span>
+    <span>protocol-test.vercel.app</span>
+  </div>
+</div>
+<script>
+  window.TALENTS = ${JSON.stringify(Object.fromEntries(Object.entries(TALENTS||{}).map(([k,v])=>[k,{cat:v.cat}])))};
+  window.onload = () => { window.print(); };
+<\/script>
+</body></html>`;
 
-  doc.setTextColor(60, 53, 48);
-  doc.text(currentResult.date, W - margin, 16, { align: 'right' });
-
-  // Title
-  doc.setTextColor(232, 224, 212);
-  doc.setFontSize(28);
-  doc.setFont('helvetica', 'bold');
-  doc.text(currentResult.name, margin, 36);
-
-  doc.setTextColor(107, 101, 96);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.text(currentResult.tagline.toUpperCase(), margin, 44);
-
-  // Divider
-  doc.setDrawColor(42, 42, 42);
-  doc.line(margin, 50, W - margin, 50);
-
-  // Top 5
-  let y = 60;
-  doc.setTextColor(139, 111, 71);
-  doc.setFontSize(7);
-  doc.text('ТОП-5 ТАЛАНТІВ', margin, y);
-  y += 8;
-
-  currentResult.top5.forEach((t, i) => {
-    const x = margin + (i * (contentW / 5));
-    const bw = contentW / 5 - 3;
-    doc.setFillColor(17, 17, 17);
-    doc.rect(x, y, bw, 20, 'F');
-    doc.setDrawColor(42, 42, 42);
-    doc.rect(x, y, bw, 20, 'S');
-    doc.setFillColor(200, 169, 110);
-    doc.rect(x, y + 18, bw, 1, 'F');
-    doc.setTextColor(107, 101, 96);
-    doc.setFontSize(6);
-    doc.text(`#${i+1}`, x + bw/2, y + 5, { align: 'center' });
-    doc.setTextColor(200, 169, 110);
-    doc.setFontSize(7);
-    const name = t.name.length > 12 ? t.name.substring(0, 11) + '…' : t.name;
-    doc.text(name, x + bw/2, y + 12, { align: 'center' });
-    doc.setTextColor(107, 101, 96);
-    doc.setFontSize(5);
-    doc.text(TALENTS[t.name]?.cat || '', x + bw/2, y + 17, { align: 'center' });
-  });
-  y += 28;
-
-  // Category bars
-  doc.setTextColor(139, 111, 71);
-  doc.setFontSize(7);
-  doc.text('ПРОФІЛЬ КАТЕГОРІЙ', margin, y);
-  y += 7;
-
-  const sortedCats = [...currentResult.catScores].sort((a, b) => b.avg - a.avg);
-  const maxPct = Math.max(...sortedCats.map(c => c.avg));
-  sortedCats.forEach(c => {
-    doc.setTextColor(107, 101, 96);
-    doc.setFontSize(6);
-    doc.text(c.cat, margin, y + 3);
-    const barX = margin + 30;
-    const barW = contentW - 40;
-    doc.setFillColor(26, 26, 26);
-    doc.rect(barX, y, barW, 4, 'F');
-    doc.setFillColor(200, 169, 110);
-    doc.rect(barX, y, barW * (c.avg / (maxPct || 1)), 4, 'F');
-    doc.setTextColor(200, 169, 110);
-    doc.text(c.avg + '%', W - margin, y + 3, { align: 'right' });
-    y += 9;
-  });
-  y += 6;
-
-  // Analysis
-  doc.setDrawColor(42, 42, 42);
-  doc.line(margin, y, W - margin, y);
-  y += 8;
-  doc.setTextColor(139, 111, 71);
-  doc.setFontSize(7);
-  doc.text('ДЕТАЛЬНИЙ АНАЛІЗ', margin, y);
-  y += 8;
-
-  const cleanAnalysis = currentResult.analysis
-    .replace(/###\s/g, '')
-    .replace(/\*\*/g, '')
-    .replace(/- /g, '• ');
-
-  doc.setTextColor(154, 144, 136);
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
-  const lines = doc.splitTextToSize(cleanAnalysis, contentW);
-  const maxLines = Math.min(lines.length, 55);
-  lines.slice(0, maxLines).forEach(line => {
-    if (y > 270) return;
-    if (line.startsWith('### ') || /^[А-ЯІЇЄ].*:$/.test(line)) {
-      doc.setTextColor(232, 224, 212); doc.setFontSize(8); doc.setFont('helvetica', 'bold');
-      doc.text(line.replace('### ', ''), margin, y);
-      doc.setTextColor(154, 144, 136); doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-    } else {
-      doc.text(line, margin, y);
-    }
-    y += 4.5;
-  });
-
-  // Footer
-  doc.setFillColor(200, 169, 110);
-  doc.rect(0, 293, W, 2, 'F');
-  doc.setTextColor(60, 53, 48);
-  doc.setFontSize(6);
-  doc.text('protocol-test.vercel.app', W / 2, 291, { align: 'center' });
-
-  doc.save(`protocol-${currentResult.name}-${Date.now()}.pdf`);
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
 }
 
 // ============================================================
@@ -943,10 +896,12 @@ function viewHistoryItem(id) {
 
   const maxCat = Math.max(...item.catScores.map(c => c.avg));
   const formatted = (item.analysis || '')
-    .replace(/###\s(.+)/g, '<h3>$1</h3>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<h3>$1</h3>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/gs, '<ul>$&</ul>')
     .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>');
+    .replace(/\n/g, ' ');
 
   document.getElementById('modalContent').innerHTML = `
     <div style="text-align:center;margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border)">
