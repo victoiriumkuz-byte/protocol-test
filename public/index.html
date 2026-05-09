@@ -194,6 +194,42 @@
   .btn-restart { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 12px 32px; cursor: pointer; text-transform: uppercase; transition: all 0.3s; }
   .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* TABS */
+  .result-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+  .result-tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 14px 24px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; margin-bottom: -1px; }
+  .result-tab:hover { color: var(--text); }
+  .result-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* SHADOW PROFILE */
+  .shadow-intro { border: 1px solid var(--border); padding: 24px 32px; margin-bottom: 32px; }
+  .shadow-intro-text { font-size: 13px; color: var(--text-muted); line-height: 1.8; }
+  .shadow-cta { text-align: center; padding: 48px 0; }
+  .shadow-analysis { font-size: 13px; line-height: 1.9; color: var(--text); }
+  .shadow-analysis h3 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--accent); margin: 28px 0 10px; font-weight: 400; }
+  .shadow-analysis strong { color: var(--accent2); font-weight: 500; }
+  .shadow-analysis li { margin-bottom: 6px; list-style: none; padding-left: 16px; position: relative; }
+  .shadow-analysis li::before { content: '—'; position: absolute; left: 0; color: var(--accent2); }
+  .shadow-loading { text-align: center; padding: 48px 0; }
+  .shadow-loading-ring { width: 48px; height: 48px; border: 1px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1.2s linear infinite; margin: 0 auto 20px; }
+
+  /* COMPATIBILITY */
+  .compat-input-block { margin-bottom: 32px; }
+  .compat-picker-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .compat-talent-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); font-family: 'Martian Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 6px 12px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .compat-talent-btn:hover { border-color: var(--accent2); color: var(--text); }
+  .compat-talent-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(200,169,110,0.08); }
+  .compat-talent-btn:disabled { opacity: 0.3; cursor: default; }
+  .compat-selected-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .compat-chip { background: rgba(200,169,110,0.1); border: 1px solid var(--accent2); color: var(--accent); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 1px; padding: 4px 12px; cursor: pointer; transition: all 0.2s; }
+  .compat-chip:hover { background: rgba(200,169,110,0.2); }
+  .compat-analysis { font-size: 13px; line-height: 1.9; color: var(--text); }
+  .compat-analysis h3 { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--accent); margin: 28px 0 10px; font-weight: 400; }
+  .compat-score { text-align: center; padding: 32px; border: 1px solid var(--border); margin-bottom: 32px; }
+  .compat-score-num { font-family: 'Playfair Display', serif; font-size: 64px; color: var(--accent); line-height: 1; }
+  .compat-score-label { font-size: 9px; letter-spacing: 4px; color: var(--text-muted); text-transform: uppercase; margin-top: 8px; }
+
   /* ARCHETYPE BLOCK */
   .archetype-block { border: 1px solid var(--accent2); padding: 32px 40px; margin-bottom: 48px; text-align: center; position: relative; }
   .archetype-label { font-size: 9px; letter-spacing: 4px; color: var(--accent2); text-transform: uppercase; margin-bottom: 20px; }
@@ -237,10 +273,10 @@
   <div class="intro-inner">
     <div class="logo-badge">Protocol</div>
     <h1 class="intro-title">Твої <em>сильні</em><br>сторони</h1>
-    <p class="intro-sub">Тест талантів · 70 запитань · AI-аналіз</p>
+    <p class="intro-sub">Тест талантів · 68 запитань · AI-аналіз</p>
     <p class="intro-desc">Дізнайся, де твій справжній потенціал. Не загальні слова — конкретний профіль твоїх природних талантів з практичними рекомендаціями.</p>
     <div class="stats-row">
-      <div class="stat"><span class="stat-num">70</span><span class="stat-label">Запитань</span></div>
+      <div class="stat"><span class="stat-num">68</span><span class="stat-label">Запитань</span></div>
       <div class="stat"><span class="stat-num">34</span><span class="stat-label">Таланти</span></div>
       <div class="stat"><span class="stat-num">~15</span><span class="stat-label">Хвилин</span></div>
     </div>
@@ -286,58 +322,89 @@
 <!-- RESULT -->
 <div id="result" class="screen">
   <div class="result-inner">
+
+    <!-- Header — завжди видно -->
     <div class="result-header">
       <div class="result-badge">Твій профіль готовий</div>
       <h2 class="result-name" id="resultName">—</h2>
       <p class="result-tagline" id="resultTagline">—</p>
     </div>
 
-    <div class="similarity-block" id="similarityBlock">
-      <div class="similarity-pct" id="similarityPct">—%</div>
-      <div class="similarity-text" id="similarityText">Завантаження статистики...</div>
+    <!-- TABS -->
+    <div class="result-tabs">
+      <button class="result-tab active" id="tab-profile" onclick="switchTab('profile')">Мій профіль</button>
+      <button class="result-tab" id="tab-shadow" onclick="switchTab('shadow')">Тіньовий профіль</button>
+      <button class="result-tab" id="tab-compat" onclick="switchTab('compat')">Сумісність</button>
     </div>
 
-    <div class="categories-section">
-      <p class="section-title">Профіль категорій</p>
-      <div id="categoryBars"></div>
-    </div>
-
-    <p class="section-title">Топ-5 талантів</p>
-    <div class="talents-top" id="topTalents"></div>
-
-    <div class="analysis-block" data-label="Детальний аналіз">
-      <div class="analysis-text" id="analysisText">Завантаження...</div>
-    </div>
-
-    <div class="resources-block">
-      <p class="section-title">Книги та розвиток</p>
-      <div class="resources-grid" id="resourcesGrid"></div>
-    </div>
-
-    <!-- ARCHETYPE -->
-    <div class="archetype-block" id="archetypeBlock">
-      <p class="archetype-label">Твій архетип</p>
-      <p class="archetype-name-en" id="archetypeNameEn"></p>
-      <h2 class="archetype-name" id="archetypeName"></h2>
-      <p class="archetype-essence" id="archetypeEssence"></p>
-      <span class="archetype-tag" id="archetypeTag"></span>
-    </div>
-
-    <!-- SHARE CARD -->
-    <div class="share-section">
-      <p class="section-title">Поділитись результатом</p>
-      <div class="share-card-wrap">
-        <canvas id="shareCanvas" width="960" height="540"></canvas>
+    <!-- TAB: МІЙ ПРОФІЛЬ -->
+    <div class="tab-content active" id="tabContent-profile">
+      <div class="similarity-block" id="similarityBlock">
+        <div class="similarity-pct" id="similarityPct">—%</div>
+        <div class="similarity-text" id="similarityText">Завантаження статистики...</div>
       </div>
-      <div class="share-btns">
-        <button class="btn-share-dl" onclick="downloadShareCard()">↓ Зберегти картку</button>
-        <button class="btn-share-copy" onclick="copyShareText()">↗ Скопіювати текст</button>
+      <div class="categories-section">
+        <p class="section-title">Профіль категорій</p>
+        <div id="categoryBars"></div>
+      </div>
+      <p class="section-title">Топ-5 талантів</p>
+      <div class="talents-top" id="topTalents"></div>
+      <div class="analysis-block" data-label="Детальний аналіз">
+        <div class="analysis-text" id="analysisText">Завантаження...</div>
+      </div>
+      <div class="resources-block">
+        <p class="section-title">Книги та розвиток</p>
+        <div class="resources-grid" id="resourcesGrid"></div>
+      </div>
+      <div class="archetype-block" id="archetypeBlock">
+        <p class="archetype-label">Твій архетип</p>
+        <p class="archetype-name-en" id="archetypeNameEn"></p>
+        <h2 class="archetype-name" id="archetypeName"></h2>
+        <p class="archetype-essence" id="archetypeEssence"></p>
+        <span class="archetype-tag" id="archetypeTag"></span>
+      </div>
+      <div class="share-section">
+        <p class="section-title">Поділитись результатом</p>
+        <div class="share-card-wrap">
+          <canvas id="shareCanvas" width="960" height="540"></canvas>
+        </div>
+        <div class="share-btns">
+          <button class="btn-share-dl" onclick="downloadShareCard()">↓ Зберегти картку</button>
+          <button class="btn-share-copy" onclick="copyShareText()">↗ Скопіювати текст</button>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-action primary" onclick="downloadPDF()">↓ Завантажити PDF</button>
+        <button class="btn-action" onclick="saveToHistory()">+ Зберегти в кабінет</button>
       </div>
     </div>
 
-    <div class="result-actions">
-      <button class="btn-action primary" onclick="downloadPDF()">↓ Завантажити PDF</button>
-      <button class="btn-action" onclick="saveToHistory()">+ Зберегти в кабінет</button>
+    <!-- TAB: ТІНЬОВИЙ ПРОФІЛЬ -->
+    <div class="tab-content" id="tabContent-shadow">
+      <div class="shadow-intro">
+        <p class="shadow-intro-text">Твої таланти під тиском — це не слабкості. Це ті самі сильні сторони, але в умовах стресу, дедлайнів або конфлікту. Gallup про це мовчить.</p>
+      </div>
+      <div id="shadowContent">
+        <div class="shadow-cta">
+          <button class="btn-next" onclick="loadShadowProfile()">Згенерувати тіньовий профіль →</button>
+          <p style="font-size:10px;color:var(--text-muted);margin-top:12px;letter-spacing:1px">Займе ~20 секунд · використовує AI</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: СУМІСНІСТЬ -->
+    <div class="tab-content" id="tabContent-compat">
+      <div class="shadow-intro">
+        <p class="shadow-intro-text">Встав топ-5 талантів іншої людини щоб побачити де ви доповнюєте одне одного, а де можуть виникати тертя.</p>
+      </div>
+      <div class="compat-input-block">
+        <p class="access-label">Топ-5 талантів іншої людини</p>
+        <p style="font-size:10px;color:var(--text-muted);margin-bottom:16px;letter-spacing:1px">Вибери зі списку або попроси друга поділитись своїм профілем</p>
+        <div id="compatPicker"></div>
+        <div id="compatSelected" style="margin:16px 0;min-height:32px;"></div>
+        <button class="btn-next" id="compatBtn" onclick="loadCompatibility()" disabled>Проаналізувати сумісність →</button>
+      </div>
+      <div id="compatContent" style="margin-top:32px;"></div>
     </div>
 
     <div class="result-footer">
@@ -970,6 +1037,203 @@ function renderResult(scores, analysis) {
     document.querySelectorAll('.cat-bar-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
     drawShareCard(currentResult.archetype, top5, catScores);
   }, 300);
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.result-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('tabContent-' + tab).classList.add('active');
+  if (tab === 'compat' && !document.getElementById('compatPicker').children.length) {
+    renderCompatPicker();
+  }
+}
+
+// ============================================================
+// SHADOW PROFILE
+// ============================================================
+let shadowLoaded = false;
+
+async function loadShadowProfile() {
+  if (shadowLoaded || !currentResult) return;
+  const el = document.getElementById('shadowContent');
+  el.innerHTML = `<div class="shadow-loading"><div class="shadow-loading-ring"></div><p style="font-size:10px;letter-spacing:2px;color:var(--text-muted)">Аналізую тіньовий профіль...</p></div>`;
+
+  const top5 = currentResult.top5.map((t, i) => `${i+1}. ${t.name} — ${TALENTS[t.name]?.desc || ''}`).join('\n');
+  const archetype = currentResult.archetype?.name || '';
+
+  const prompt = `Ти — психолог і коуч з розвитку особистості. Проаналізуй тіньовий профіль людини — як її таланти проявляються в умовах стресу, тиску, конфлікту або виснаження.
+
+ТОП-5 ТАЛАНТІВ:
+${top5}
+
+АРХЕТИП: ${archetype}
+
+Напиши тіньовий аналіз УКРАЇНСЬКОЮ МОВОЮ. Це НЕ список слабкостей — це розуміння як сильні сторони "перегріваються" під тиском.
+
+Жорсткі правила:
+- Жодних загальних фраз типу "під тиском ти можеш стати..."
+- Кожен патерн прив'язаний до конкретного таланту з топ-5
+- Тон: розуміючий, як від психолога який знає тебе роками
+
+### Ти під тиском
+2-3 речення — загальний образ цієї людини коли все йде не так. Що відбувається першим.
+
+### Як перегріваються твої таланти
+Для кожного з топ-5: як саме цей талант стає проблемою під тиском. Формат: **Назва таланту** — що відбувається і чому це логічно.
+
+### Твої тригери
+3 конкретні ситуації які запускають тіньову сторону цього профілю. Не абстрактно — конкретні сценарії.
+
+### Як повернутись до себе
+3 конкретні дії — швидкі перемикачі які допомагають саме цьому профілю вийти з тіньового стану.`;
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topTalents: currentResult.top5.map(t => ({ name: t.name, desc: TALENTS[t.name]?.desc || '' })),
+        allScores: currentResult.scores,
+        confirmedPatterns: [],
+        deniedPatterns: [],
+        customPrompt: prompt
+      })
+    });
+    const data = await res.json();
+    const text = data.analysis || 'Помилка отримання аналізу.';
+    const fmt = text
+      .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, ' ');
+    el.innerHTML = `<div class="shadow-analysis"><p>${fmt}</p></div>`;
+    shadowLoaded = true;
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--danger);font-size:13px;text-align:center">Помилка підключення.</p><div class="shadow-cta"><button class="btn-next" onclick="shadowLoaded=false;loadShadowProfile()">Спробувати знову →</button></div>`;
+  }
+}
+
+// ============================================================
+// COMPATIBILITY
+// ============================================================
+let compatSelected = [];
+
+function renderCompatPicker() {
+  const picker = document.getElementById('compatPicker');
+  picker.innerHTML = `<div class="compat-picker-grid">${TALENT_NAMES.map(t =>
+    `<button class="compat-talent-btn" onclick="toggleCompatTalent('${t}', this)">${t}</button>`
+  ).join('')}</div>`;
+  updateCompatSelected();
+}
+
+function toggleCompatTalent(name, btn) {
+  if (compatSelected.includes(name)) {
+    compatSelected = compatSelected.filter(t => t !== name);
+    btn.classList.remove('selected');
+  } else if (compatSelected.length < 5) {
+    compatSelected.push(name);
+    btn.classList.add('selected');
+  }
+  document.querySelectorAll('.compat-talent-btn').forEach(b => {
+    b.disabled = compatSelected.length >= 5 && !b.classList.contains('selected');
+  });
+  updateCompatSelected();
+}
+
+function updateCompatSelected() {
+  const el = document.getElementById('compatSelected');
+  const btn = document.getElementById('compatBtn');
+  if (!el || !btn) return;
+  el.innerHTML = compatSelected.length
+    ? `<div class="compat-selected-list">${compatSelected.map(t =>
+        `<span class="compat-chip" onclick="removeCompatTalent('${t}')">${t} ✕</span>`
+      ).join('')}</div><p style="font-size:10px;color:var(--text-muted);margin-top:8px;letter-spacing:1px">${compatSelected.length}/5 обрано</p>`
+    : `<p style="font-size:10px;color:var(--text-dim);letter-spacing:1px">Обери 5 талантів</p>`;
+  btn.disabled = compatSelected.length !== 5;
+}
+
+function removeCompatTalent(name) {
+  compatSelected = compatSelected.filter(t => t !== name);
+  document.querySelectorAll('.compat-talent-btn').forEach(b => {
+    if (b.textContent === name) b.classList.remove('selected');
+    b.disabled = false;
+  });
+  updateCompatSelected();
+}
+
+async function loadCompatibility() {
+  if (!currentResult || compatSelected.length !== 5) return;
+  const el = document.getElementById('compatContent');
+  el.innerHTML = `<div class="shadow-loading"><div class="shadow-loading-ring"></div><p style="font-size:10px;letter-spacing:2px;color:var(--text-muted)">Аналізую сумісність...</p></div>`;
+
+  const myTop5 = currentResult.top5.map(t => t.name);
+  const overlap = myTop5.filter(t => compatSelected.includes(t));
+  const myList = myTop5.map((t,i) => `${i+1}. ${t} (${TALENTS[t]?.cat})`).join('\n');
+  const theirList = compatSelected.map((t,i) => `${i+1}. ${t} (${TALENTS[t]?.cat})`).join('\n');
+
+  const prompt = `Ти — коуч і психолог з досвідом роботи з командами. Проаналізуй сумісність двох людей на основі їхніх профілів талантів.
+
+ПРОФІЛЬ А:
+${myList}
+
+ПРОФІЛЬ Б:
+${theirList}
+
+СПІЛЬНІ ТАЛАНТИ: ${overlap.length > 0 ? overlap.join(', ') : 'відсутні'}
+
+Напиши аналіз сумісності УКРАЇНСЬКОЮ МОВОЮ. Кожне твердження через конкретні таланти, не загальні слова.
+
+### Індекс сумісності
+Число від 0 до 100 і одне речення пояснення. Потім 2-3 речення загального враження.
+
+### Де ви підсилюєте одне одного
+3 конкретні ситуації де ця пара разом дає більше ніж кожен окремо.
+
+### Де виникає тертя
+2-3 конкретні патерни конфлікту через різницю профілів.
+
+### Як взаємодіяти ефективніше
+3 практичні поради для цієї конкретної пари.`;
+
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topTalents: currentResult.top5.map(t => ({ name: t.name, desc: TALENTS[t.name]?.desc || '' })),
+        allScores: currentResult.scores,
+        confirmedPatterns: [],
+        deniedPatterns: [],
+        customPrompt: prompt
+      })
+    });
+    const data = await res.json();
+    const text = data.analysis || 'Помилка.';
+    const scoreMatch = text.match(/(\d{1,3})\s*(?:\/\s*100|%|з\s*100)/i);
+    const score = scoreMatch ? parseInt(scoreMatch[1]) : null;
+    const scoreColor = score >= 70 ? 'var(--success)' : score >= 45 ? 'var(--accent)' : 'var(--danger)';
+    const fmt = text
+      .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, ' ');
+    el.innerHTML = `
+      ${score !== null ? `<div class="compat-score"><div class="compat-score-num" style="color:${scoreColor}">${score}</div><div class="compat-score-label">Індекс сумісності · з 100</div></div>` : ''}
+      <div class="compat-analysis"><p>${fmt}</p></div>
+      <div style="margin-top:32px;text-align:center">
+        <button class="btn-nav" onclick="compatSelected=[];renderCompatPicker();document.getElementById('compatContent').innerHTML=''">← Спробувати іншу пару</button>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:var(--danger);font-size:13px;text-align:center">Помилка підключення.</p>`;
+  }
 }
 
 // ============================================================
