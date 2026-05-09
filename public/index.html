@@ -740,20 +740,14 @@ function renderResult(scores, analysis) {
 
   // Analysis - clean markdown formatting
   const formatted = analysis
-    .replace(/### ([^
-]+)/g, '<h3>$1</h3>')
-    .replace(/## ([^
-]+)/g, '<h3>$1</h3>')
-    .replace(/# ([^
-]+)/g, '<h3>$1</h3>')
+    .replace(/### ([^\n]+)/g, '<h3>$1</h3>')
+    .replace(/## ([^\n]+)/g, '<h3>$1</h3>')
+    .replace(/# ([^\n]+)/g, '<h3>$1</h3>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/
-
-/g, '</p><p>')
-    .replace(/
-/g, ' ');
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, ' ');
   document.getElementById('analysisText').innerHTML = `<p>${formatted}</p>`;
 
   // Resources
@@ -875,15 +869,11 @@ body{font-family:'Roboto',Arial,Helvetica,sans-serif;background:#fff;color:#1a1a
 </div>
 </body></html>`;
 
-  // Use data URI — works in all browsers including Safari
-  const encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-  const a = document.createElement('a');
-  a.href = encoded;
-  a.download = `protocol-${r.name}-${new Date().toISOString().slice(0,10)}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => alert('Файл завантажено!\n\nВідкрий його в браузері → натисни "Зберегти як PDF"'), 600);
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 800);
 }
 
 // ============================================================
