@@ -194,6 +194,23 @@
   .btn-restart { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 12px 32px; cursor: pointer; text-transform: uppercase; transition: all 0.3s; }
   .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ARCHETYPE BLOCK */
+  .archetype-block { border: 1px solid var(--accent2); padding: 32px 40px; margin-bottom: 48px; text-align: center; position: relative; }
+  .archetype-label { font-size: 9px; letter-spacing: 4px; color: var(--accent2); text-transform: uppercase; margin-bottom: 20px; }
+  .archetype-name-en { font-size: 10px; letter-spacing: 6px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+  .archetype-name { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px); color: var(--accent); font-weight: 400; line-height: 1.1; margin-bottom: 16px; }
+  .archetype-essence { font-size: 13px; color: var(--text-muted); line-height: 1.8; max-width: 480px; margin: 0 auto 20px; }
+  .archetype-tag { display: inline-block; font-size: 10px; letter-spacing: 2px; color: var(--accent2); border: 1px solid var(--accent2); padding: 4px 14px; }
+
+  /* SHARE CARD */
+  .share-section { margin-bottom: 48px; }
+  .share-card-wrap { position: relative; margin-bottom: 16px; }
+  #shareCanvas { display: block; width: 100%; max-width: 480px; margin: 0 auto; border: 1px solid var(--border); }
+  .share-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .btn-share-dl { background: var(--accent); color: #0a0a0a; border: none; font-family: 'Martian Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 2px; padding: 12px 24px; cursor: pointer; text-transform: uppercase; }
+  .btn-share-copy { background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Martian Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 12px 24px; cursor: pointer; text-transform: uppercase; transition: all 0.2s; }
+  .btn-share-copy:hover { border-color: var(--accent); color: var(--accent); }
+
   /* ANIMATIONS */
   @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes slideIn { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: translateX(0); } }
@@ -297,9 +314,29 @@
       <div class="resources-grid" id="resourcesGrid"></div>
     </div>
 
+    <!-- ARCHETYPE -->
+    <div class="archetype-block" id="archetypeBlock">
+      <p class="archetype-label">Твій архетип</p>
+      <p class="archetype-name-en" id="archetypeNameEn"></p>
+      <h2 class="archetype-name" id="archetypeName"></h2>
+      <p class="archetype-essence" id="archetypeEssence"></p>
+      <span class="archetype-tag" id="archetypeTag"></span>
+    </div>
+
+    <!-- SHARE CARD -->
+    <div class="share-section">
+      <p class="section-title">Поділитись результатом</p>
+      <div class="share-card-wrap">
+        <canvas id="shareCanvas" width="960" height="540"></canvas>
+      </div>
+      <div class="share-btns">
+        <button class="btn-share-dl" onclick="downloadShareCard()">↓ Зберегти картку</button>
+        <button class="btn-share-copy" onclick="copyShareText()">↗ Скопіювати текст</button>
+      </div>
+    </div>
+
     <div class="result-actions">
       <button class="btn-action primary" onclick="downloadPDF()">↓ Завантажити PDF</button>
-      <button class="btn-action" onclick="shareResult()">↗ Поділитись</button>
       <button class="btn-action" onclick="saveToHistory()">+ Зберегти в кабінет</button>
     </div>
 
@@ -651,8 +688,152 @@ async function getAIAnalysis(topTalents, allScores) {
 }
 
 // ============================================================
-// RESOURCES (books/courses based on top talent)
+// ARCHETYPES
 // ============================================================
+const ARCHETYPES = {
+  'Виконання+Мислення':  { name: 'Точний механізм',    nameEn: 'Precision Engine',   essence: 'Ти не просто робиш — ти розбираєшся як зробити правильно, і потім робиш саме так. Без зайвого шуму.', tag: '#точний-механізм' },
+  'Виконання+Відносини': { name: 'Надійна опора',       nameEn: 'Steady Ground',      essence: 'Люди знають: якщо ти взявся — буде зроблено. І при цьому ніхто не залишиться позаду.', tag: '#надійна-опора' },
+  'Виконання+Вплив':     { name: 'Каталізатор дій',     nameEn: 'Force Multiplier',   essence: 'Ти не чекаєш дозволу. Ти бачиш що треба зробити, запалюєш інших і рухаєшся вперед.', tag: '#каталізатор-дій' },
+  'Виконання+Виконання': { name: 'Залізна воля',        nameEn: 'Iron Will',          essence: 'Поки інші думають чи варто починати — ти вже на половині шляху до фінішу.', tag: '#залізна-воля' },
+  'Мислення+Виконання':  { name: 'Архітектор систем',   nameEn: 'System Architect',   essence: 'Ти будуєш не рішення — ти будуєш системи, які роблять правильні рішення неминучими.', tag: '#архітектор-систем' },
+  'Мислення+Відносини':  { name: 'Глибокий спостерігач',nameEn: 'Deep Observer',      essence: 'Ти розумієш людей через патерни, а патерни — через людей. Це рідкісна комбінація.', tag: '#глибокий-спостерігач' },
+  'Мислення+Вплив':      { name: 'Картограф ідей',      nameEn: 'Idea Cartographer',  essence: 'Ти бачиш ландшафт там, де інші бачать туман. І знаєш як передати цей вигляд іншим.', tag: '#картограф-ідей' },
+  'Мислення+Мислення':   { name: 'Тихий стратег',       nameEn: 'Silent Strategist',  essence: 'Ти думаєш на кілька ходів вперед — і рідко говориш про це вголос, поки не впевнений.', tag: '#тихий-стратег' },
+  'Відносини+Виконання': { name: 'Будівельник довіри',   nameEn: 'Trust Builder',      essence: 'Ти досягаєш результатів через людей, а не попри них. Це і є справжня сила.', tag: '#будівельник-довіри' },
+  'Відносини+Мислення':  { name: 'Перекладач смислів',  nameEn: 'Meaning Translator', essence: 'Ти відчуваєш що відбувається з людиною — і знаходиш слова щоб вона це теж зрозуміла.', tag: '#перекладач-смислів' },
+  'Відносини+Вплив':     { name: 'Серце команди',        nameEn: 'Team Pulse',         essence: 'Ти той, з ким люди хочуть іти — не тому що ти змушуєш, а тому що поряд з тобою легше.', tag: '#серце-команди' },
+  'Відносини+Відносини': { name: 'Хранитель зв\'язків',  nameEn: 'Bond Keeper',        essence: 'Ти пам\'ятаєш деталі. Ти помічаєш коли щось змінилось. Ти той, хто тримає людей разом.', tag: '#хранитель-звязків' },
+  'Вплив+Виконання':     { name: 'Рушійна сила',         nameEn: 'Driving Force',      essence: 'Ти не просто надихаєш — ти забезпечуєш щоб натхнення перетворилось на реальний результат.', tag: '#рушійна-сила' },
+  'Вплив+Мислення':      { name: 'Провідник наративу',   nameEn: 'Narrative Guide',    essence: 'Ти бачиш суть і знаєш як її сформулювати так, щоб інші нарешті теж побачили.', tag: '#провідник-наративу' },
+  'Вплив+Відносини':     { name: 'Магнітне поле',        nameEn: 'Magnetic Field',     essence: 'Люди тягнуться до тебе — і залишаються, бо відчувають що ти справжній.', tag: '#магнітне-поле' },
+  'Вплив+Вплив':         { name: 'Первинний сигнал',     nameEn: 'Prime Signal',       essence: 'Ти задаєш тон. Коли ти в кімнаті — енергія змінюється. Це не риторика, це факт.', tag: '#первинний-сигнал' },
+};
+
+function getArchetype(catScores) {
+  const sorted = [...catScores].sort((a, b) => b.avg - a.avg);
+  const primary = sorted[0]?.cat || 'Виконання';
+  const secondary = sorted[1]?.cat || 'Мислення';
+  const key = primary === secondary
+    ? `${primary}+${primary}`
+    : `${primary}+${secondary}`;
+  return ARCHETYPES[key] || ARCHETYPES['Мислення+Виконання'];
+}
+
+// ============================================================
+// SHARE CARD
+// ============================================================
+function drawShareCard(archetype, top5, catScores) {
+  const canvas = document.getElementById('shareCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 960, H = 540;
+  canvas.width = W; canvas.height = H;
+
+  // Background
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle grid pattern
+  ctx.strokeStyle = 'rgba(200,169,110,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Top accent line
+  ctx.strokeStyle = '#c8a96e';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(48, 48); ctx.lineTo(W - 48, 48); ctx.stroke();
+
+  // Bottom accent line
+  ctx.beginPath(); ctx.moveTo(48, H - 48); ctx.lineTo(W - 48, H - 48); ctx.stroke();
+
+  // PROTOCOL logo
+  ctx.fillStyle = '#c8a96e';
+  ctx.font = '500 11px monospace';
+  ctx.letterSpacing = '5px';
+  ctx.fillText('PROTOCOL', 48, 38);
+
+  // Archetype label
+  ctx.fillStyle = '#6b6560';
+  ctx.font = '9px monospace';
+  ctx.fillText('АРХЕТИП', 48, 82);
+
+  // Archetype name EN
+  ctx.fillStyle = '#4a4540';
+  ctx.font = '11px monospace';
+  ctx.fillText(archetype.nameEn.toUpperCase(), 48, 106);
+
+  // Archetype name UA — big serif
+  ctx.fillStyle = '#c8a96e';
+  ctx.font = `400 ${archetype.name.length > 14 ? 52 : 64}px Georgia, serif`;
+  ctx.fillText(archetype.name, 48, 190);
+
+  // Essence text — wrap
+  ctx.fillStyle = '#8a8078';
+  ctx.font = '15px monospace';
+  const words = archetype.essence.split(' ');
+  let line = '', y = 240;
+  for (const word of words) {
+    const test = line + word + ' ';
+    if (ctx.measureText(test).width > W - 96 - 280 && line) {
+      ctx.fillText(line.trim(), 48, y); line = word + ' '; y += 26;
+    } else { line = test; }
+  }
+  ctx.fillText(line.trim(), 48, y);
+
+  // Tag
+  ctx.fillStyle = '#8b6f47';
+  ctx.font = '11px monospace';
+  ctx.fillText(archetype.tag, 48, H - 58);
+
+  // Site
+  ctx.fillStyle = '#3a3530';
+  ctx.font = '9px monospace';
+  ctx.fillText('protocol-test-psi.vercel.app', 48, H - 38);
+
+  // TOP 5 right side panel
+  const px = W - 260, pw = 212;
+  ctx.strokeStyle = 'rgba(200,169,110,0.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(px, 72, pw, H - 120);
+
+  ctx.fillStyle = '#4a4540';
+  ctx.font = '8px monospace';
+  ctx.fillText('ТОП-5 ТАЛАНТІВ', px + 16, 96);
+
+  top5.forEach((t, i) => {
+    const ty = 120 + i * 68;
+    ctx.fillStyle = i === 0 ? '#c8a96e' : '#3a3530';
+    ctx.font = `400 ${i === 0 ? 11 : 9}px monospace`;
+    ctx.fillText(`#${i + 1}`, px + 16, ty);
+    ctx.fillStyle = i === 0 ? '#e8e0d4' : '#6b6560';
+    ctx.font = `400 ${i === 0 ? 15 : 13}px Georgia, serif`;
+    ctx.fillText(t.name, px + 16, ty + 18);
+    ctx.fillStyle = '#3a3530';
+    ctx.font = '9px monospace';
+    ctx.fillText(TALENTS[t.name]?.cat || '', px + 16, ty + 34);
+  });
+}
+
+function downloadShareCard() {
+  const canvas = document.getElementById('shareCanvas');
+  if (!canvas) return;
+  const a = document.createElement('a');
+  a.download = `protocol-${currentResult?.name || 'result'}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function copyShareText() {
+  if (!currentResult) return;
+  const a = currentResult.archetype;
+  const text = `Мій архетип за тестом Protocol — «${a?.name || currentResult.name}»\n${a?.tag || ''}\n\nТоп-5 талантів: ${currentResult.top5.map(t => t.name).join(' · ')}\n\n🔗 protocol-test-psi.vercel.app`;
+  navigator.clipboard.writeText(text)
+    .then(() => { const b = document.querySelector('.btn-share-copy'); if (b) { b.textContent = '✓ Скопійовано'; setTimeout(() => b.textContent = '↗ Скопіювати текст', 2000); } })
+    .catch(() => alert(text));
+}
+
+
 const RESOURCES = {
   'Мислення': [
     { type: 'Книга · є переклад', title: 'Думай повільно, вирішуй швидко', desc: 'Деніел Канеман. Як мозок приймає рішення і де помиляється. Одна з найважливіших книг про мислення.' },
@@ -721,7 +902,8 @@ function renderResult(scores, analysis) {
     catScores,
     analysis,
     scores,
-    topCat: catScores.sort((a,b) => b.avg - a.avg)[0]?.cat
+    topCat: catScores.sort((a,b) => b.avg - a.avg)[0]?.cat,
+    archetype: getArchetype(catScores)
   };
 
   document.getElementById('resultName').textContent = topTalent;
@@ -774,11 +956,19 @@ function renderResult(scores, analysis) {
       <div class="resource-desc">${r.desc}</div>
     </div>`).join('');
 
+  // Archetype
+  const archetype = currentResult.archetype;
+  document.getElementById('archetypeNameEn').textContent = archetype.nameEn.toUpperCase();
+  document.getElementById('archetypeName').textContent = archetype.name;
+  document.getElementById('archetypeEssence').textContent = archetype.essence;
+  document.getElementById('archetypeTag').textContent = archetype.tag;
+
   showScreen('result');
   setNavActive('navHome');
 
   setTimeout(() => {
     document.querySelectorAll('.cat-bar-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
+    drawShareCard(currentResult.archetype, top5, catScores);
   }, 300);
 }
 
