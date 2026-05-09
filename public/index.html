@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocol — Тест сильних сторін</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Martian+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #c8a96e;
+    --accent2: #8b6f47;
+    --text: #e8e0d4;
+    --text-muted: #6b6560;
+    --text-dim: #3a3530;
+    --danger: #c0392b;
+    --success: #27ae60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Martian Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== INTRO SCREEN ===== */
+  #intro {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .intro-inner {
+    max-width: 640px;
+    width: 100%;
+    text-align: center;
+    animation: fadeUp 1s ease both;
+  }
+
+  .logo-badge {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 4px;
+    padding: 6px 16px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    animation: fadeUp 1s ease 0.2s both;
+  }
+
+  .intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 8vw, 72px);
+    line-height: 1.05;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 16px;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .intro-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .intro-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+
+  .intro-desc {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #8a8078;
+    max-width: 480px;
+    margin: 0 auto 56px;
+    animation: fadeUp 1s ease 0.5s both;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-bottom: 56px;
+    animation: fadeUp 1s ease 0.6s both;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* ACCESS GATE */
+  .access-gate {
+    animation: fadeUp 1s ease 0.7s both;
+    margin-bottom: 32px;
+  }
+
+  .access-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .access-input-row {
+    display: flex;
+    gap: 8px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .access-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Martian Mono', monospace;
+    font-size: 12px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.3s;
+    letter-spacing: 2px;
+  }
+
+  .access-input:focus { border-color: var(--accent); }
+  .access-input::placeholder { color: var(--text-dim); }
+
+  .btn-check {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    padding: 12px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+
+  .btn-check:hover { opacity: 0.85; }
+
+  .access-msg {
+    font-size: 10px;
+    letter-spacing: 1px;
+    margin-top: 8px;
+    height: 16px;
+  }
+
+  .access-msg.ok { color: var(--success); }
+  .access-msg.err { color: var(--danger); }
+
+  .divider-or {
+    color: var(--text-dim);
+    font-size: 9px;
+    letter-spacing: 3px;
+    margin: 20px 0;
+    animation: fadeUp 1s ease 0.8s both;
+  }
+
+  .btn-pay {
+    background: transparent;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    animation: fadeUp 1s ease 0.9s both;
+  }
+
+  .btn-pay:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ===== QUIZ SCREEN ===== */
+  #quiz { padding: 0; }
+
+  .quiz-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .quiz-logo {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .quiz-progress-text {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+  }
+
+  .progress-bar-wrap {
+    height: 2px;
+    background: var(--border);
+    width: 100%;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .quiz-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+
+  .question-card {
+    max-width: 680px;
+    width: 100%;
+    animation: slideIn 0.5s ease both;
+  }
+
+  .q-category {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .q-number {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(20px, 3.5vw, 30px);
+    line-height: 1.4;
+    color: var(--text);
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+
+  .answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 500px) {
+    .answers-grid { grid-template-columns: 1fr; }
+  }
+
+  .answer-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Martian Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    padding: 16px 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .answer-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+
+  .answer-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    transform: translateY(-2px);
+  }
+
+  .answer-btn.selected {
+    border-color: var(--accent);
+    background: rgba(200, 169, 110, 0.08);
+    color: var(--accent);
+  }
+
+  .answer-btn.selected::before { width: 3px; }
+
+  .answer-score {
+    display: block;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-nav {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 10px 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.25s;
+  }
+
+  .btn-nav:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn-nav:disabled { opacity: 0.2; cursor: default; }
+
+  .btn-next {
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.25s;
+  }
+
+  .btn-next:hover { opacity: 0.85; transform: translateX(4px); }
+  .btn-next:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+  /* ===== LOADING SCREEN ===== */
+  #loading {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .loading-inner { max-width: 480px; }
+
+  .loading-ring {
+    width: 80px;
+    height: 80px;
+    border: 1px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+    margin: 0 auto 40px;
+  }
+
+  .loading-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .loading-steps { list-style: none; margin-top: 32px; }
+
+  .loading-step {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+    transition: color 0.5s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .loading-step.active { color: var(--accent); }
+  .loading-step.done { color: var(--success); }
+
+  .step-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.5s;
+  }
+
+  .loading-step.active .step-dot { background: var(--accent); }
+  .loading-step.done .step-dot { background: var(--success); }
+
+  /* ===== RESULT SCREEN ===== */
+  #result {
+    padding: 60px 20px;
+    align-items: center;
+  }
+
+  .result-inner {
+    max-width: 800px;
+    width: 100%;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .result-header {
+    text-align: center;
+    margin-bottom: 64px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-badge {
+    display: inline-block;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 9px;
+    letter-spacing: 4px;
+    padding: 6px 16px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .result-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 60px);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .result-tagline {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* TOP TALENTS */
+  .section-title {
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .talents-top {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+
+  @media (max-width: 600px) {
+    .talents-top { grid-template-columns: 1fr 1fr; }
+  }
+
+  .talent-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .talent-card:nth-child(1) { animation-delay: 0.1s; }
+  .talent-card:nth-child(2) { animation-delay: 0.2s; }
+  .talent-card:nth-child(3) { animation-delay: 0.3s; }
+  .talent-card:nth-child(4) { animation-delay: 0.4s; }
+  .talent-card:nth-child(5) { animation-delay: 0.5s; }
+
+  .talent-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .talent-rank {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .talent-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .talent-score {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* AI ANALYSIS */
+  .analysis-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px;
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .analysis-block::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -1px; left: 32px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .analysis-text {
+    font-size: 13px;
+    line-height: 2;
+    color: #9a9088;
+  }
+
+  .analysis-text h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 400;
+    margin: 24px 0 12px;
+  }
+
+  .analysis-text h3:first-child { margin-top: 0; }
+
+  .analysis-text strong { color: var(--accent); font-weight: 400; }
+
+  .analysis-text ul {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+
+  .analysis-text li { margin-bottom: 8px; }
+
+  /* SCORE BARS */
+  .categories-section { margin-bottom: 64px; }
+
+  .category-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .cat-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    width: 160px;
+    flex-shrink: 0;
+  }
+
+  .cat-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    position: relative;
+  }
+
+  .cat-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+  }
+
+  .cat-score {
+    font-size: 10px;
+    color: var(--accent);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* RESTART */
+  .result-footer {
+    text-align: center;
+    margin-top: 64px;
+    padding-top: 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Martian Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 12px 32px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+
+  .btn-restart:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(32px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- ===== INTRO ===== -->
+<div id="intro" class="screen active">
+  <div class="intro-inner">
+    <div class="logo-badge">Protocol</div>
+
+    <h1 class="intro-title">Твої <em>сильні</em><br>сторони</h1>
+    <p class="intro-sub">Тест талантів · 70 запитань · AI-аналіз</p>
+
+    <p class="intro-desc">
+      Дізнайся, де твій справжній потенціал. Не загальні слова — конкретний профіль твоїх природних талантів з практичними рекомендаціями.
+    </p>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-num">70</span>
+        <span class="stat-label">Запитань</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">34</span>
+        <span class="stat-label">Таланти</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">~15</span>
+        <span class="stat-label">Хвилин</span>
+      </div>
+    </div>
+
+    <div class="access-gate">
+      <p class="access-label">Код доступу для підписників</p>
+      <div class="access-input-row">
+        <input type="text" class="access-input" id="codeInput" placeholder="PROTOCOL-XXXX" maxlength="20">
+        <button class="btn-check" onclick="checkCode()">Увійти</button>
+      </div>
+      <p class="access-msg" id="accessMsg"></p>
+    </div>
+
+    <p class="divider-or">— або —</p>
+
+    <button class="btn-pay" onclick="startPaid()">Придбати доступ →</button>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <span class="quiz-logo">Protocol</span>
+    <span class="quiz-progress-text" id="progressText">1 / 70</span>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="question-card" id="questionCard">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOADING ===== -->
+<div id="loading" class="screen">
+  <div class="loading-inner">
+    <div class="loading-ring"></div>
+    <h2 class="loading-title">Аналізую твій профіль</h2>
+    <p style="font-size:11px;color:var(--text-muted);letter-spacing:2px">Зачекай хвилинку</p>
+    <ul class="loading-steps" id="loadingSteps">
+      <li class="loading-step" data-step="0"><span class="step-dot"></span>Обробка відповідей</li>
+      <li class="loading-step" data-step="1"><span class="step-dot"></span>Визначення домінантних талантів</li>
+      <li class="loading-step" data-step="2"><span class="step-dot"></span>Побудова профілю сильних сторін</li>
+      <li class="loading-step" data-step="3"><span class="step-dot"></span>Генерація персонального аналізу</li>
+      <li class="loading-step" data-step="4"><span class="step-dot"></span>Підготовка рекомендацій</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div id="result" class="screen">
+  <div class="result-inner">
+    <div class="result-header">
+      <div class="result-badge">Твій профіль готовий</div>
+      <h2 class="result-name" id="resultName">—</h2>
+      <p class="result-tagline" id="resultTagline">—</p>
+    </div>
+
+    <div class="categories-section">
+      <p class="section-title">Профіль категорій</p>
+      <div id="categoryBars"></div>
+    </div>
+
+    <p class="section-title">Топ-5 талантів</p>
+    <div class="talents-top" id="topTalents"></div>
+
+    <div class="analysis-block" data-label="Детальний аналіз">
+      <div class="analysis-text" id="analysisText">Завантаження...</div>
+    </div>
+
+    <div class="result-footer">
+      <button class="btn-restart" onclick="restart()">← Пройти знову</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// CONFIG
+// =============================================
+const FREE_CODES = ['PROTOCOL-2024', 'PROTOCOL-FREE', 'PROTOCOL-VIP'];
+// Змініть на свої промокоди для підписників
+
+const TALENTS = {
+  'Досягнення':     { cat: 'Виконання',    desc: 'Внутрішній вогонь, що спонукає досягати цілей' },
+  'Аналітика':      { cat: 'Мислення',     desc: 'Потреба розбирати причинно-наслідкові зв\'язки' },
+  'Адаптивність':   { cat: 'Відносини',    desc: 'Легкість у прийнятті змін і несподіванок' },
+  'Зв\'язок':       { cat: 'Вплив',        desc: 'Бачення зв\'язків між усім, що існує' },
+  'Активатор':      { cat: 'Вплив',        desc: 'Нетерпіння перейти від думок до дій' },
+  'Переконливість': { cat: 'Вплив',        desc: 'Вміння переконувати інших у своїй точці зору' },
+  'Відновлювач':    { cat: 'Виконання',    desc: 'Задоволення від вирішення складних проблем' },
+  'Стратегія':      { cat: 'Мислення',     desc: 'Здатність бачити альтернативні шляхи вперед' },
+  'Комунікація':    { cat: 'Вплив',        desc: 'Природна схильність пояснювати та розповідати' },
+  'Конкуренція':    { cat: 'Вплив',        desc: 'Порівняння власних результатів з іншими' },
+  'Контекст':       { cat: 'Мислення',     desc: 'Розуміння теперішнього через призму минулого' },
+  'Цілеспрямованість':{ cat:'Мислення',   desc: 'Чітке бачення напрямку та пріоритетів' },
+  'Розробник':      { cat: 'Відносини',    desc: 'Розпізнавання і розвиток потенціалу в людях' },
+  'Дисципліна':     { cat: 'Виконання',    desc: 'Потреба в структурі та порядку' },
+  'Емпатія':        { cat: 'Відносини',    desc: 'Відчуття емоцій оточуючих' },
+  'Рівність':       { cat: 'Відносини',    desc: 'Прагнення справедливого ставлення до всіх' },
+  'Футурист':       { cat: 'Мислення',     desc: 'Надихає образами майбутнього' },
+  'Гармонія':       { cat: 'Відносини',    desc: 'Пошук консенсусу та уникнення конфліктів' },
+  'Ідеаліст':       { cat: 'Мислення',     desc: 'Прагнення досконалості та відмінності' },
+  'Включеність':    { cat: 'Відносини',    desc: 'Прийняття всіх без винятку' },
+  'Індивідуалізація':{ cat:'Відносини',   desc: 'Увага до унікальності кожної людини' },
+  'Вхідні дані':    { cat: 'Мислення',     desc: 'Прагнення збирати та зберігати інформацію' },
+  'Інтелект':       { cat: 'Мислення',     desc: 'Глибокі розумові роздуми та саморефлексія' },
+  'Навчання':       { cat: 'Мислення',     desc: 'Бажання вчитися і розвиватися' },
+  'Максималізм':    { cat: 'Виконання',    desc: 'Трансформація хорошого у відмінне' },
+  'Позитивізм':     { cat: 'Вплив',        desc: 'Ентузіазм та заряджання інших енергією' },
+  'Стосунки':       { cat: 'Відносини',    desc: 'Задоволення від глибоких зв\'язків' },
+  'Відповідальність':{ cat:'Виконання',   desc: 'Психологічна власність над взятими зобов\'язаннями' },
+  'Самовпевненість':{ cat: 'Вплив',       desc: 'Внутрішня певність у своїх силах' },
+  'Значимість':     { cat: 'Вплив',        desc: 'Бажання мати вагу у світі' },
+  'Синергія':       { cat: 'Мислення',     desc: 'Каталізує командну роботу та взаємодію' },
+  'Стратегічне мислення':{ cat:'Мислення',desc:'Сортування варіантів і пошук найкращого шляху' },
+  'Продуктивність': { cat: 'Виконання',    desc: 'Зосередженість і слідування меті' },
+  'Переможець':     { cat: 'Виконання',    desc: 'Незалежна позиція і самодостатність' },
+};
+
+const TALENT_NAMES = Object.keys(TALENTS);
+const CATEGORIES = ['Виконання', 'Мислення', 'Відносини', 'Вплив'];
+
+// =============================================
+// QUESTIONS (70 questions, ~2 per talent)
+// =============================================
+const QUESTIONS = [
+  // ДОСЯГНЕННЯ
+  { text: 'Я рідко відчуваю задоволення від завершеного, — вже думаю про наступне завдання', talent: 'Досягнення' },
+  { text: 'Дні без продуктивних результатів залишають мене з відчуттям порожнечі', talent: 'Досягнення' },
+  // АНАЛІТИКА
+  { text: 'Перед тим як зробити висновок, я хочу побачити дані та докази', talent: 'Аналітика' },
+  { text: 'Мені важливо розуміти, ЧОМУ щось відбувається, а не тільки ЩО', talent: 'Аналітика' },
+  // АДАПТИВНІСТЬ
+  { text: 'Несподівані зміни планів мене не дратують — я легко переключаюсь', talent: 'Адаптивність' },
+  { text: 'Я живу теперішнім моментом і добре справляюся з невизначеністю', talent: 'Адаптивність' },
+  // ЗВ'ЯЗОК
+  { text: 'Я вірю, що все у світі пов\'язане між собою невипадково', talent: 'Зв\'язок' },
+  { text: 'Випадкові збіги мають для мене глибший сенс, ніж просто збіг', talent: 'Зв\'язок' },
+  // АКТИВАТОР
+  { text: 'Мені важко чекати — хочу почати діяти прямо зараз', talent: 'Активатор' },
+  { text: 'Обговорення без конкретних дій мене швидко втомлює', talent: 'Активатор' },
+  // ПЕРЕКОНЛИВІСТЬ
+  { text: 'Я природньо схиляю людей до своєї позиції, навіть не докладаючи зусиль', talent: 'Переконливість' },
+  { text: 'Я добре розумію, що треба сказати конкретній людині, щоб вона погодилась', talent: 'Переконливість' },
+  // ВІДНОВЛЮВАЧ
+  { text: 'Складна проблема, яку ніхто не може вирішити, притягує мене як магніт', talent: 'Відновлювач' },
+  { text: 'Я відчуваю справжнє задоволення, коли нарешті знаходжу рішення', talent: 'Відновлювач' },
+  // СТРАТЕГІЯ
+  { text: 'Стикаючись з проблемою, я одразу бачу кілька можливих шляхів вперед', talent: 'Стратегія' },
+  { text: 'Я вмію швидко відкидати нежиттєздатні варіанти та фокусуватись на кращих', talent: 'Стратегія' },
+  // КОМУНІКАЦІЯ
+  { text: 'Мені легко знайти правильні слова для будь-якої ситуації', talent: 'Комунікація' },
+  { text: 'Я думаю образами і розповідями — так мені легше пояснювати ідеї', talent: 'Комунікація' },
+  // КОНКУРЕНЦІЯ
+  { text: 'Я завжди знаю, яке місце займаю порівняно з іншими', talent: 'Конкуренція' },
+  { text: 'Перемога важливіша, ніж просто "добре зробив"', talent: 'Конкуренція' },
+  // КОНТЕКСТ
+  { text: 'Щоб зрозуміти теперішнє, мені потрібно знати, як усе починалось', talent: 'Контекст' },
+  { text: 'Я часто цитую минулі події, щоб пояснити поточну ситуацію', talent: 'Контекст' },
+  // ЦІЛЕСПРЯМОВАНІСТЬ
+  { text: 'У мене є чітке розуміння, куди я рухаюсь і навіщо', talent: 'Цілеспрямованість' },
+  { text: 'Коли мої дії відповідають моїм цінностям — я відчуваю внутрішній спокій', talent: 'Цілеспрямованість' },
+  // РОЗРОБНИК
+  { text: 'Мені приємно спостерігати, як людина зростає завдяки моїй допомозі', talent: 'Розробник' },
+  { text: 'Я помічаю потенціал у людях раніше, ніж вони самі його бачать', talent: 'Розробник' },
+  // ДИСЦИПЛІНА
+  { text: 'Мені комфортно, коли є чіткий план і структура', talent: 'Дисципліна' },
+  { text: 'Безлад навколо мене знижує мою продуктивність', talent: 'Дисципліна' },
+  // ЕМПАТІЯ
+  { text: 'Я відчуваю емоції інших людей майже так само гостро, як свої власні', talent: 'Емпатія' },
+  { text: 'Мені легко зрозуміти, що відчуває людина, навіть якщо вона не говорить про це', talent: 'Емпатія' },
+  // РІВНІСТЬ
+  { text: 'Мене дратує, коли до людей ставляться по-різному без вагомих причин', talent: 'Рівність' },
+  { text: 'Я вірю, що правила повинні однаково стосуватись усіх', talent: 'Рівність' },
+  // ФУТУРИСТ
+  { text: 'Образи майбутнього надихають мене більше, ніж поточні реалії', talent: 'Футурист' },
+  { text: 'Я можу захопити людей своїм баченням того, яким усе могло б бути', talent: 'Футурист' },
+  // ГАРМОНІЯ
+  { text: 'Я намагаюсь знайти спільне між різними точками зору', talent: 'Гармонія' },
+  { text: 'Конфлікти мене виснажують — я шукаю шляхи до згоди', talent: 'Гармонія' },
+  // ІДЕАЛІСТ
+  { text: 'Мені недостатньо просто "добре" — я хочу відмінно', talent: 'Ідеаліст' },
+  { text: 'Я постійно шукаю способи зробити те, що вже хороше, ще кращим', talent: 'Ідеаліст' },
+  // ВКЛЮЧЕНІСТЬ
+  { text: 'Я помічаю, коли хтось почувається виключеним, і хочу це виправити', talent: 'Включеність' },
+  { text: 'Кожна людина заслуговує бути частиною групи', talent: 'Включеність' },
+  // ІНДИВІДУАЛІЗАЦІЯ
+  { text: 'Мені цікаво, що робить кожну конкретну людину унікальною', talent: 'Індивідуалізація' },
+  { text: 'Я легко підлаштовую свій стиль спілкування під різних людей', talent: 'Індивідуалізація' },
+  // ВХІДНІ ДАНІ
+  { text: 'Мені важко викидати речі або видаляти файли — раптом стане в нагоді', talent: 'Вхідні дані' },
+  { text: 'Я читаю, збираю, зберігаю — інформація ніколи не буває зайвою', talent: 'Вхідні дані' },
+  // ІНТЕЛЕКТ
+  { text: 'Мені подобається залишатись наодинці зі своїми думками', talent: 'Інтелект' },
+  { text: 'Я багато роздумую, ставлю собі питання і переосмислюю погляди', talent: 'Інтелект' },
+  // НАВЧАННЯ
+  { text: 'Процес навчання приносить мені задоволення незалежно від результату', talent: 'Навчання' },
+  { text: 'Я постійно вивчаю щось нове і мені від цього добре', talent: 'Навчання' },
+  // МАКСИМАЛІЗМ
+  { text: 'Я вважаю за краще вдосконалювати сильні сторони, а не виправляти слабкі', talent: 'Максималізм' },
+  { text: 'Мене захоплює трансформація хорошого у видатне', talent: 'Максималізм' },
+  // ПОЗИТИВІЗМ
+  { text: 'Люди часто кажуть, що я заряджаю їх енергією', talent: 'Позитивізм' },
+  { text: 'Навіть у складних ситуаціях я знаходжу щось хороше', talent: 'Позитивізм' },
+  // СТОСУНКИ
+  { text: 'Я ціную глибокі відносини більше, ніж широке коло знайомств', talent: 'Стосунки' },
+  { text: 'Чим краще я знаю людину, тим більше можу на неї покластись', talent: 'Стосунки' },
+  // ВІДПОВІДАЛЬНІСТЬ
+  { text: 'Якщо я взявся за щось — зроблю, навіть якщо стало важче, ніж очікувалось', talent: 'Відповідальність' },
+  { text: 'Мені важливо відчувати, що я несу відповідальність за результат', talent: 'Відповідальність' },
+  // САМОВПЕВНЕНІСТЬ
+  { text: 'Я довіряю своїм інстинктам і рідко сумніваюсь у правильності рішення', talent: 'Самовпевненість' },
+  { text: 'Я самодостатній і не потребую постійного схвалення від інших', talent: 'Самовпевненість' },
+  // ЗНАЧИМІСТЬ
+  { text: 'Мені важливо, щоб моя робота мала реальний вплив на інших', talent: 'Значимість' },
+  { text: 'Я прагну, щоб мене пам\'ятали за щось важливе', talent: 'Значимість' },
+  // СИНЕРГІЯ
+  { text: 'Я природньо займаю роль людини, що об\'єднує команду', talent: 'Синергія' },
+  { text: 'Я бачу, як різні люди можуть доповнювати одне одного', talent: 'Синергія' },
+  // СТРАТЕГІЧНЕ МИСЛЕННЯ
+  { text: 'Я можу тримати в голові багато змінних і знаходити оптимальне рішення', talent: 'Стратегічне мислення' },
+  { text: 'Я завжди думаю на кілька кроків вперед', talent: 'Стратегічне мислення' },
+  // ПРОДУКТИВНІСТЬ
+  { text: 'Коли я ставлю ціль, я рухаюсь до неї доти, доки не досягну', talent: 'Продуктивність' },
+  { text: 'Я легко відсіюю відволікаючі фактори і фокусуюсь на головному', talent: 'Продуктивність' },
+  // ПЕРЕМОЖЕЦЬ
+  { text: 'Мені комфортно приймати рішення самостійно, без схвалення інших', talent: 'Переможець' },
+  { text: 'Я вважаю, що за свій успіх відповідаю тільки я', talent: 'Переможець' },
+];
+
+const ANSWERS = [
+  { label: 'Зовсім не про мене', score: 1 },
+  { label: 'Скоріше ні', score: 2 },
+  { label: 'Нейтрально', score: 3 },
+  { label: 'Скоріше так', score: 4 },
+  { label: 'Абсолютно про мене', score: 5 },
+];
+
+// =============================================
+// STATE
+// =============================================
+let currentQ = 0;
+let responses = {};
+let accessGranted = false;
+
+// =============================================
+// ACCESS
+// =============================================
+function checkCode() {
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  const msg = document.getElementById('accessMsg');
+  if (FREE_CODES.includes(code)) {
+    msg.textContent = '✓ Доступ підтверджено';
+    msg.className = 'access-msg ok';
+    accessGranted = true;
+    setTimeout(startQuiz, 800);
+  } else {
+    msg.textContent = '✗ Невірний код';
+    msg.className = 'access-msg err';
+  }
+}
+
+function startPaid() {
+  // Replace with your payment link
+  alert('Перехід до оплати.\n\nЗамініть цю функцію на посилання до вашої платіжної системи.');
+  // window.location.href = 'https://your-payment-link.com';
+}
+
+// =============================================
+// QUIZ
+// =============================================
+function startQuiz() {
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const card = document.getElementById('questionCard');
+  const talent = TALENTS[q.talent];
+
+  document.getElementById('progressText').textContent = `${currentQ + 1} / ${QUESTIONS.length}`;
+  document.getElementById('progressBar').style.width = `${((currentQ + 1) / QUESTIONS.length) * 100}%`;
+
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'slideIn 0.4s ease both';
+
+  const savedScore = responses[currentQ];
+
+  card.innerHTML = `
+    <p class="q-category">${talent.cat} · ${q.talent}</p>
+    <p class="q-number">Запитання ${currentQ + 1}</p>
+    <p class="q-text">${q.text}</p>
+    <div class="answers-grid">
+      ${ANSWERS.map((a, i) => `
+        <button class="answer-btn ${savedScore === a.score ? 'selected' : ''}"
+          onclick="selectAnswer(${a.score})">
+          <span class="answer-score">${'●'.repeat(i + 1)}${'○'.repeat(4 - i)}</span>
+          ${a.label}
+        </button>
+      `).join('')}
+    </div>
+    <div class="quiz-nav">
+      <button class="btn-nav" onclick="prevQ()" ${currentQ === 0 ? 'disabled' : ''}>← Назад</button>
+      <button class="btn-next" id="nextBtn" onclick="nextQ()" ${savedScore ? '' : 'disabled'}>
+        ${currentQ === QUESTIONS.length - 1 ? 'Завершити →' : 'Далі →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectAnswer(score) {
+  responses[currentQ] = score;
+  document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQ() {
+  if (!responses[currentQ]) return;
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+// =============================================
+// SCORING
+// =============================================
+function calcScores() {
+  const scores = {};
+  TALENT_NAMES.forEach(t => scores[t] = 0);
+  QUESTIONS.forEach((q, i) => {
+    if (responses[i]) scores[q.talent] += responses[i];
+  });
+  return scores;
+}
+
+function getTopTalents(scores, n = 5) {
+  return Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n)
+    .map(([name, score]) => ({ name, score }));
+}
+
+function getCategoryScores(scores) {
+  const catScores = {};
+  CATEGORIES.forEach(c => catScores[c] = { total: 0, count: 0 });
+  Object.entries(scores).forEach(([t, s]) => {
+    const cat = TALENTS[t]?.cat;
+    if (cat) { catScores[cat].total += s; catScores[cat].count++; }
+  });
+  return Object.entries(catScores).map(([cat, d]) => ({
+    cat,
+    avg: d.count ? Math.round((d.total / d.count / 10) * 100) : 0
+  }));
+}
+
+// =============================================
+// LOADING ANIMATION
+// =============================================
+function animateLoadingSteps(cb) {
+  const steps = document.querySelectorAll('.loading-step');
+  let i = 0;
+  const next = () => {
+    if (i > 0) { steps[i - 1].classList.remove('active'); steps[i - 1].classList.add('done'); }
+    if (i < steps.length) { steps[i].classList.add('active'); i++; setTimeout(next, 1200); }
+    else cb();
+  };
+  next();
+}
+
+// =============================================
+// AI ANALYSIS
+// =============================================
+async function getAIAnalysis(topTalents, allScores) {
+  try {
+    const talentsWithDesc = topTalents.map(t => ({ name: t.name, desc: TALENTS[t.name]?.desc || '' }));
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topTalents: talentsWithDesc, allScores })
+    });
+    const data = await response.json();
+    return data.analysis || 'Не вдалось отримати аналіз.';
+  } catch (e) {
+    return 'Не вдалось підключитись до AI. Перевірте інтернет-з\'єднання.';
+  }
+}
+
+// =============================================
+// RENDER RESULT
+// =============================================
+function renderResult(scores, analysis) {
+  const top5 = getTopTalents(scores, 5);
+  const catScores = getCategoryScores(scores);
+
+  // Profile name from top talent
+  const topTalent = top5[0].name;
+  document.getElementById('resultName').textContent = topTalent;
+  document.getElementById('resultTagline').textContent =
+    (TALENTS[topTalent]?.desc || '').toUpperCase();
+
+  // Top 5 cards
+  const talentsEl = document.getElementById('topTalents');
+  talentsEl.innerHTML = top5.map((t, i) => `
+    <div class="talent-card">
+      <div class="talent-rank">#${i + 1}</div>
+      <div class="talent-name">${t.name}</div>
+      <div class="talent-score">${TALENTS[t.name]?.cat || ''}</div>
+    </div>
+  `).join('');
+
+  // Category bars
+  const barsEl = document.getElementById('categoryBars');
+  const maxCat = Math.max(...catScores.map(c => c.avg));
+  barsEl.innerHTML = catScores.map((c, i) => `
+    <div class="category-row" style="animation-delay:${i * 0.1}s">
+      <span class="cat-label">${c.cat}</span>
+      <div class="cat-bar-bg">
+        <div class="cat-bar-fill" data-pct="${(c.avg / (maxCat || 1)) * 100}"></div>
+      </div>
+      <span class="cat-score">${c.avg}%</span>
+    </div>
+  `).join('');
+
+  // AI Analysis — format markdown-ish
+  const formatted = analysis
+    .replace(/###\s(.+)/g, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/- (.+)/g, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+
+  document.getElementById('analysisText').innerHTML = `<p>${formatted}</p>`;
+
+  showScreen('result');
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.cat-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 300);
+}
+
+// =============================================
+// FLOW
+// =============================================
+async function finishQuiz() {
+  showScreen('loading');
+  const scores = calcScores();
+  const top5 = getTopTalents(scores, 5);
+
+  animateLoadingSteps(async () => {
+    const analysis = await getAIAnalysis(top5, scores);
+    renderResult(scores, analysis);
+  });
+}
+
+function restart() {
+  currentQ = 0;
+  responses = {};
+  showScreen('intro');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// Enter key on code input
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('codeInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkCode();
+  });
+});
+</script>
+</body>
+</html>
