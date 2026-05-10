@@ -744,7 +744,7 @@ function animateLoadingSteps(cb) {
   let i = 0;
   const next = () => {
     if (i > 0) { steps[i-1].classList.remove('active'); steps[i-1].classList.add('done'); }
-    if (i < steps.length) { steps[i].classList.add('active'); i++; setTimeout(next, 1200); }
+    if (i < steps.length) { steps[i].classList.add('active'); i++; setTimeout(next, 700); }
     else cb();
   };
   next();
@@ -772,8 +772,8 @@ async function getAIAnalysis(topTalents, allScores) {
       body: JSON.stringify({
         topTalents: talentsWithDesc,
         allScores,
-        confirmedPatterns: confirmedPatterns.slice(0, 15),
-        deniedPatterns: deniedPatterns.slice(0, 10)
+        confirmedPatterns: confirmedPatterns.slice(0, 8),
+        deniedPatterns: deniedPatterns.slice(0, 5)
       })
     });
     const data = await response.json();
