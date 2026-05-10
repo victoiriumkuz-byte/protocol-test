@@ -712,9 +712,18 @@ function getTopTalents(scores, n = 5) {
 }
 
 function getCategoryScores(scores) {
-  const cat = {}; CATEGORIES.forEach(c => cat[c] = { total: 0, count: 0 });
-  Object.entries(scores).forEach(([t, s]) => { const c = TALENTS[t]?.cat; if (c) { cat[c].total += s; cat[c].count++; } });
-  return Object.entries(cat).map(([c, d]) => ({ cat: c, avg: d.count ? Math.round((d.total / d.count / 10) * 100) : 0 }));
+  const cat = {};
+  CATEGORIES.forEach(c => cat[c] = { total: 0, count: 0 });
+  Object.entries(scores).forEach(([t, s]) => {
+    const c = TALENTS[t]?.cat;
+    if (c) { cat[c].total += s; cat[c].count++; }
+  });
+  // Total sum across all categories
+  const grandTotal = Object.values(cat).reduce((sum, d) => sum + d.total, 0) || 1;
+  return Object.entries(cat).map(([c, d]) => ({
+    cat: c,
+    avg: Math.round((d.total / grandTotal) * 100)
+  }));
 }
 
 // ============================================================
