@@ -298,7 +298,7 @@
 
 <!-- NAV -->
 <nav class="top-nav" id="topNav" style="display:none">
-  <span class="nav-logo">Protocol</span>
+  <span class="nav-logo" onclick="goHome()" style="cursor:pointer">Protocol</span>
   <div class="nav-links">
     <button class="nav-btn active" id="navHome" onclick="goHome()">Тест</button>
     <button class="nav-btn" id="navCabinet" onclick="showCabinet()">Кабінет <span class="nav-badge" id="navCount"></span></button>
@@ -310,8 +310,8 @@
 <div id="intro" class="screen active">
   <div class="intro-inner">
     <div class="logo-badge">Protocol</div>
-    <h1 class="intro-title">Твої <em>сильні</em><br>сторони</h1>
-    <p class="intro-sub">Тест талантів · 68 запитань · AI-аналіз</p>
+    <h1 class="intro-title">Твої сильні<br>сторони</h1>
+    <p class="intro-sub">Тест талантів · 68 запитань</p>
     <p class="intro-desc">Дізнайся, де твій справжній потенціал. Не загальні слова — конкретний профіль твоїх природних талантів з практичними рекомендаціями.</p>
     <div class="stats-row">
       <div class="stat"><span class="stat-num">68</span><span class="stat-label">Запитань</span></div>
@@ -401,16 +401,7 @@
         <p class="archetype-essence" id="archetypeEssence"></p>
         <span class="archetype-tag" id="archetypeTag"></span>
       </div>
-      <div class="share-section">
-        <p class="section-title">Поділитись результатом</p>
-        <div class="share-card-wrap">
-          <canvas id="shareCanvas" width="960" height="540"></canvas>
-        </div>
-        <div class="share-btns">
-          <button class="btn-share-dl" onclick="downloadShareCard()">↓ Зберегти картку</button>
-          <button class="btn-share-copy" onclick="copyShareText()">↗ Скопіювати текст</button>
-        </div>
-      </div>
+
       <div class="result-actions">
         <button class="btn-action primary" onclick="downloadPDF()">↓ Завантажити PDF</button>
         <button class="btn-action" onclick="saveToHistory()">+ Зберегти в кабінет</button>
@@ -420,7 +411,7 @@
     <!-- TAB: ТІНЬОВИЙ ПРОФІЛЬ -->
     <div class="tab-content" id="tabContent-shadow">
       <div class="shadow-intro">
-        <p class="shadow-intro-text">Твої таланти під тиском — це не слабкості. Це ті самі сильні сторони, але в умовах стресу, дедлайнів або конфлікту. Gallup про це мовчить.</p>
+        <p class="shadow-intro-text">Твої таланти під тиском — це не слабкості. Це ті самі сильні сторони, але в умовах стресу, дедлайнів або конфлікту.</p>
       </div>
       <div id="shadowContent">
         <div class="shadow-cta">
@@ -827,145 +818,6 @@ function getArchetype(catScores) {
 // ============================================================
 // SHARE CARD
 // ============================================================
-function drawShareCard(archetype, top5, catScores) {
-  const canvas = document.getElementById('shareCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = 960, H = 540;
-  canvas.width = W; canvas.height = H;
-
-  // Background
-  ctx.fillStyle = '#0a0a0a';
-  ctx.fillRect(0, 0, W, H);
-
-  // Subtle grid pattern
-  ctx.strokeStyle = 'rgba(200,169,110,0.04)';
-  ctx.lineWidth = 1;
-  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-
-  // Top accent line
-  ctx.strokeStyle = '#c8a96e';
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(48, 48); ctx.lineTo(W - 48, 48); ctx.stroke();
-
-  // Bottom accent line
-  ctx.beginPath(); ctx.moveTo(48, H - 48); ctx.lineTo(W - 48, H - 48); ctx.stroke();
-
-  // PROTOCOL logo
-  ctx.fillStyle = '#c8a96e';
-  ctx.font = '500 11px monospace';
-  ctx.letterSpacing = '5px';
-  ctx.fillText('PROTOCOL', 48, 38);
-
-  // Archetype label
-  ctx.fillStyle = '#6b6560';
-  ctx.font = '9px monospace';
-  ctx.fillText('АРХЕТИП', 48, 82);
-
-  // Archetype name EN
-  ctx.fillStyle = '#4a4540';
-  ctx.font = '11px monospace';
-  ctx.fillText(archetype.nameEn.toUpperCase(), 48, 106);
-
-  // Archetype name UA — big serif
-  ctx.fillStyle = '#c8a96e';
-  ctx.font = `400 ${archetype.name.length > 14 ? 52 : 64}px Georgia, serif`;
-  ctx.fillText(archetype.name, 48, 190);
-
-  // Essence text — wrap
-  ctx.fillStyle = '#8a8078';
-  ctx.font = '15px monospace';
-  const words = archetype.essence.split(' ');
-  let line = '', y = 240;
-  for (const word of words) {
-    const test = line + word + ' ';
-    if (ctx.measureText(test).width > W - 96 - 280 && line) {
-      ctx.fillText(line.trim(), 48, y); line = word + ' '; y += 26;
-    } else { line = test; }
-  }
-  ctx.fillText(line.trim(), 48, y);
-
-  // Tag
-  ctx.fillStyle = '#8b6f47';
-  ctx.font = '11px monospace';
-  ctx.fillText(archetype.tag, 48, H - 58);
-
-  // Site
-  ctx.fillStyle = '#3a3530';
-  ctx.font = '9px monospace';
-  ctx.fillText('protocol-test-psi.vercel.app', 48, H - 38);
-
-  // TOP 5 right side panel
-  const px = W - 260, pw = 212;
-  ctx.strokeStyle = 'rgba(200,169,110,0.15)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(px, 72, pw, H - 120);
-
-  ctx.fillStyle = '#4a4540';
-  ctx.font = '8px monospace';
-  ctx.fillText('ТОП-5 ТАЛАНТІВ', px + 16, 96);
-
-  top5.forEach((t, i) => {
-    const ty = 120 + i * 68;
-    ctx.fillStyle = i === 0 ? '#c8a96e' : '#3a3530';
-    ctx.font = `400 ${i === 0 ? 11 : 9}px monospace`;
-    ctx.fillText(`#${i + 1}`, px + 16, ty);
-    ctx.fillStyle = i === 0 ? '#e8e0d4' : '#6b6560';
-    ctx.font = `400 ${i === 0 ? 15 : 13}px Georgia, serif`;
-    ctx.fillText(t.name, px + 16, ty + 18);
-    ctx.fillStyle = '#3a3530';
-    ctx.font = '9px monospace';
-    ctx.fillText(TALENTS[t.name]?.cat || '', px + 16, ty + 34);
-  });
-}
-
-function downloadShareCard() {
-  const canvas = document.getElementById('shareCanvas');
-  if (!canvas) return;
-  const a = document.createElement('a');
-  a.download = `protocol-${currentResult?.name || 'result'}.png`;
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-}
-
-function copyShareText() {
-  if (!currentResult) return;
-  const a = currentResult.archetype;
-  const text = `Мій архетип за тестом Protocol — «${a?.name || currentResult.name}»\n${a?.tag || ''}\n\nТоп-5 талантів: ${currentResult.top5.map(t => t.name).join(' · ')}\n\n🔗 protocol-test-psi.vercel.app`;
-  navigator.clipboard.writeText(text)
-    .then(() => { const b = document.querySelector('.btn-share-copy'); if (b) { b.textContent = '✓ Скопійовано'; setTimeout(() => b.textContent = '↗ Скопіювати текст', 2000); } })
-    .catch(() => alert(text));
-}
-
-
-const RESOURCES = {
-  'Мислення': [
-    { type: 'Книга · є переклад', title: 'Думай повільно, вирішуй швидко', desc: 'Деніел Канеман. Як мозок приймає рішення і де помиляється. Одна з найважливіших книг про мислення.' },
-    { type: 'Книга · є переклад', title: 'Мистецтво мислити ясно', desc: 'Рольф Добеллі. 99 когнітивних пасток, яких варто уникати у щоденних рішеннях.' },
-    { type: 'Книга · є переклад', title: 'Глибока робота', desc: 'Кел Ньюпорт. Як досягати видатних результатів в епоху постійних відволікань.' },
-    { type: 'Книга · є переклад', title: 'У потоці', desc: 'Міхай Чиксентміхайї. Як досягти стану глибокої концентрації і отримувати задоволення від роботи.' },
-  ],
-  'Вплив': [
-    { type: 'Книга · є переклад', title: 'Психологія впливу', desc: 'Роберт Чалдіні. Шість принципів переконання — обовязкова книга для кожного, хто працює з людьми.' },
-    { type: 'Книга · є переклад', title: 'Ніколи не йдіть на компроміс', desc: 'Кріс Восс. Техніки переговорів від колишнього агента ФБР — працює в бізнесі та житті.' },
-    { type: 'Книга · є переклад', title: 'Говори як TED', desc: 'Кармін Галло. Що робить публічний виступ незабутнім — секрети найкращих спікерів світу.' },
-    { type: 'Книга · є переклад', title: 'Почни з Чому', desc: 'Саймон Сінек. Як великі лідери надихають до дій через мету, а не через продукт.' },
-  ],
-  'Відносини': [
-    { type: 'Книга · є переклад', title: 'Як здобувати друзів', desc: 'Дейл Карнегі. Вічна класика про побудову стосунків — актуальна через 90 років після написання.' },
-    { type: 'Книга · є переклад', title: 'Ненасильницьке спілкування', desc: 'Маршалл Розенберг. Як говорити так, щоб тебе чули і слухати так, щоб розуміти.' },
-    { type: 'Книга · є переклад', title: 'Сміливість бути вразливим', desc: 'Брене Браун. Чому відкритість — це не слабкість, а суперсила сучасного лідера.' },
-    { type: 'Книга · є переклад', title: 'Ігри, в які грають люди', desc: 'Ерік Берн. Розуміння прихованих сценаріїв у спілкуванні — транзакційний аналіз простою мовою.' },
-  ],
-  'Виконання': [
-    { type: 'Книга · є переклад', title: 'Атомні звички', desc: 'Джеймс Клір. Система малих щоденних дій, яка приводить до видатних довгострокових результатів.' },
-    { type: 'Книга · є переклад', title: 'Єдине, що важливо', desc: 'Гері Келлер. Як фокус на одному головному завданні дає кращий результат, ніж багатозадачність.' },
-    { type: 'Книга · є переклад', title: 'Від хорошого до великого', desc: 'Джим Коллінз. Що відрізняє компанії-лідери від просто хороших — дослідження на реальних даних.' },
-    { type: 'Книга · є переклад', title: 'Зроби це зараз', desc: 'Девід Аллен. Методологія GTD для управління завданнями, яку використовують мільйони людей.' },
-  ],
-};
-
 function getResources(catScores) {
   const topCat = catScores.sort((a, b) => b.avg - a.avg)[0]?.cat || 'Мислення';
   return RESOURCES[topCat] || RESOURCES['Мислення'];
@@ -1105,7 +957,6 @@ function renderResult(scores, analysis) {
 
   setTimeout(() => {
     document.querySelectorAll('.cat-bar-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
-    drawShareCard(currentResult.archetype, top5, catScores);
   }, 300);
 }
 
